@@ -1,0 +1,234 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/wankdanker/node-dns-express"
+
+    >dns-express (v1.4.1)</a>
+</h1>
+<h4>An Express style DNS server</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.dns-express">module dns-express</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.dns-express.dns-express">
+            function <span class="apidocSignatureSpan"></span>dns-express
+            <span class="apidocSignatureSpan">(options)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.dns-express.toString">
+            function <span class="apidocSignatureSpan">dns-express.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.dns-express.toString">module dns-express.toString</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.dns-express.toString.toString">
+            function <span class="apidocSignatureSpan">dns-express.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.dns-express" id="apidoc.module.dns-express">module dns-express</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.dns-express.dns-express" id="apidoc.element.dns-express.dns-express">
+        function <span class="apidocSignatureSpan"></span>dns-express
+        <span class="apidocSignatureSpan">(options)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function ExpressDNS(options) {
+	var DNS = Usey();
+
+	// replace the EventEmitter on the UseyInstance object with the native-dns server
+	DNS.events = dns.createServer(options);
+
+	DNS.use(function (req, res, next) {
+		req.questions.forEach(function (question) {
+			question.header = req.header;
+			question.remote = req.remote;
+			question.typeName = (dns.consts.qtypeToName(question.type) || &#x22;&#x22;).toLowerCase();
+		});
+
+		return next();
+	});
+
+	dnsTypes.concat(&#x22;ALL&#x22;).forEach(function (type) {
+		var ltype = type.toLowerCase();
+
+		// add the ltype methods to the native-dns server
+		DNS.events[ltype] = function (route, fn) {
+			if (arguments.length === 1) {
+				fn = route;
+				route = undefined;
+			}
+			route = RegExp(route);
+
+			DNS.use(function (req, res, next) {
+				var questions = req.questions;
+				var match = false;
+				var question;
+
+				for (var x = 0; x &#x3c; questions.length; x++) {
+					question = questions[x];
+
+					//this is where the matching happens.
+					//TODO: expand this to handle matching in ways other than regex
+					if ((question.typeName === ltype || ltype === &#x27;all&#x27; || question.typeName === &#x27;any&#x27;) &#x26;&#x26; (question.match = route.exec(question
+.name))) {
+						match = true;
+						res.begins += 1;
+
+						fn(question, res, next);
+					}
+				}
+
+				if (match) {
+					return
+				}
+
+				return next();
+			});
+		};
+	});
+
+	// copy these Usey methods to the native-dns server
+	DNS.events.use = DNS.use.bind(DNS);
+	DNS.events.unuse = DNS.unuse.bind(DNS);
+
+	// duplicate the native-dns serve method as listen
+	DNS.events.listen = DNS.events.serve;
+
+	// optionally monkey-patch the native-dns close method to hook-in any required &#x27;before-close&#x27; logic
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply#Using_apply_in_monkey-patching
+	//var close = DNS.events.close.bind(DNS.events);
+	//DNS.events.close = function () {
+	//	return close.apply(DNS.events, arguments);
+	//};
+
+	// receive requests from the native-dns server
+	DNS.events.on(&#x27;request&#x27;, function (req, res) {
+		var request = new DNSRequest(req, res);
+		var response = new DNSResponse(req, res);
+
+		DNS(request, response);
+	});
+
+	// return the native-dns server
+	return DNS.events;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.dns-express.toString" id="apidoc.element.dns-express.toString">
+        function <span class="apidocSignatureSpan">dns-express.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return text;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.dns-express.toString" id="apidoc.module.dns-express.toString">module dns-express.toString</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.dns-express.toString.toString" id="apidoc.element.dns-express.toString.toString">
+        function <span class="apidocSignatureSpan">dns-express.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toString() { [native code] }</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
