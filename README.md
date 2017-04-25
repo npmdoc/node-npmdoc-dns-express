@@ -1,4 +1,7 @@
-# api documentation for  [dns-express (v1.4.1)](https://github.com/wankdanker/node-dns-express)  [![npm package](https://img.shields.io/npm/v/npmdoc-dns-express.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-dns-express) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-dns-express.svg)](https://travis-ci.org/npmdoc/node-npmdoc-dns-express)
+# npmdoc-dns-express
+
+#### basic api documentation for  [dns-express (v1.4.1)](https://github.com/wankdanker/node-dns-express)  [![npm package](https://img.shields.io/npm/v/npmdoc-dns-express.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-dns-express) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-dns-express.svg)](https://travis-ci.org/npmdoc/node-npmdoc-dns-express)
+
 #### An Express style DNS server
 
 [![NPM](https://nodei.co/npm/dns-express.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/dns-express)
@@ -59,7 +62,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "version": "1.4.1"
+    "version": "1.4.1",
+    "bin": {}
 }
 ```
 
